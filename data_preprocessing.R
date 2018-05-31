@@ -47,11 +47,8 @@ bureau_active_group <- bureau %>%
 write.table(bureau_active_group, file = paste0(path, "/bureau_active_group.txt", sep = ""), 
             sep = "|", row.names = FALSE)
 
-bureau_active_group
 
-unique(bureau_active_group$CREDIT_ACTIVE)
-
-for ( i in unique(bureau_active_group$CREDIT_ACTIVE) ){
+for ( i in unique(bureau$CREDIT_ACTIVE) ){
   
   ptm <- proc.time()
   cat( paste( "Procesowanie dla poziomu: \n", i , "\n", sep = "" ) )
