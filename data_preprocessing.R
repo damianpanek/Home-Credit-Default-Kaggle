@@ -41,27 +41,25 @@ bureau_active_group <- bureau %>%
                                                            min = "min"), na.rm = TRUE)
 
 
-
-
+i
+gsub(' ', '', i)
 
 write.table(bureau_active_group, file = paste0(path, "/bureau_active_group.txt", sep = ""), 
             sep = "|", row.names = FALSE)
 
-
-for ( i in unique(bureau$CREDIT_ACTIVE) ){
+for ( i in c("Bad debt") ){
   
   ptm <- proc.time()
   cat( paste( "Procesowanie dla poziomu: \n", i , "\n", sep = "" ) )
   
   eval(parse(text = paste0(
-    "bureau_active_group_", i , " <- bureau %>%
-    filter(CREDIT_ACTIVE == '", i, "') %>%
+    "bureau_group_", gsub(' ', '', i) , " <- bureau %>%
+    filter(CREDIT_ACTIVE == '", 'Bad debt', "') %>%
     group_by(SK_ID_CURR) %>% 
     summarize_at(.vars = eval(parse(text = vars_text)), 
-    .funs = c(mean_bureau_act_", i, " = 'mean', 
-              median_bureau_act_", i, " = 'median', 
-              count_bureau_act_", i, " = 'n', 
-              sum_bureau_act_", i, " = 'sum'), na.rm = TRUE)")
+    .funs = c(mean_bureau_act_", gsub(' ', '', i), " = 'mean', 
+              median_bureau_act_", gsub(' ', '', i), " = 'median',
+              sum_bureau_act_", gsub(' ', '', i), " = 'sum'), na.rm = TRUE)")
     
     
     
@@ -70,8 +68,8 @@ for ( i in unique(bureau$CREDIT_ACTIVE) ){
   ))  
     
     app_merged <- app_merged %>% 
-      left_join(., eval(parse(text = paste0('bureau_active_group_', i, sep = ""), 
-                              on = c("SK_ID_CURR" = "SK_ID_CURR" ))))
+      left_join(., eval(parse(text = paste0('bureau_group_', gsub(' ', '', i) , sep = ""))), 
+                              by = c("SK_ID_CURR" = "SK_ID_CURR" ))
     
   
   
@@ -81,7 +79,6 @@ for ( i in unique(bureau$CREDIT_ACTIVE) ){
 
 
 # Descriptive statistics for all  levels of credit active variable 
-
 
 
 
@@ -205,6 +202,8 @@ colnames(credit_bal_group)
 ptm <- proc.time()
 write.table(app_merged, file = paste0(path, "/app_merged_credit_bal_vars.txt", sep = ""), sep = "|", 
             row.names = FALSE)
+# App merge with 
+write.table(app_merged, file = paste0(path, "/app_merged_extend_bureau.txt", sep = ""), sep = "|", row.names = FALSE)
 proc.time() - ptm
 
 head(app_merged)
